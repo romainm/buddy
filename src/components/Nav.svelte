@@ -49,5 +49,6 @@
 		<li><a class='{$location === "/" ? "selected" : ""}' href='/' use:link>transactions</a></li>
 		<li><a class='{$location === "/budgets" ? "selected" : ""}' href='/budgets' use:link>budgets</a></li>
 		<li><a class='{$location === "/reports" ? "selected" : ""}' href='/reports' use:link>reports</a></li>
+		<li><a class='{$location === "/import" ? "selected" : ""}' href='/import' use:link>import</a></li>
 	</ul>
 </nav>
