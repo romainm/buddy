@@ -1,6 +1,6 @@
 
 <input id="import-file" type="file" on:input={readIt} multiple/>
-<!-- <button v-on:click="recordTransactions()">Record Transactions</button> -->
+<button on:click={recordTransactions}>Record Transactions</button>
 <div id="transactions-table"></div>
 
 
@@ -9,6 +9,7 @@
 import Tabulator from 'tabulator-tables';
 import { onMount } from 'svelte';
 import moment from 'moment';
+import { db } from '../firebase';
 
 let transactions_import = [];
 
@@ -19,7 +20,7 @@ onMount(() => {
         layout:"fitData",
         columns:[
             {title:"Date", field:"date", align:"center", width:110, editable:false},
-            {title:"Account", field:"account", width:200, editable:false},
+            {title:"Account", field:"accountId", width:200, editable:false},
             {title:"Amount", field:"amount", width:130, align: "right", editable:false},
             {title:"Name", field:"name", minWidth:300, editable:false},
         ],
@@ -100,10 +101,29 @@ const readIt = async function(event) {
     // sort by date desc
     importData.transactions.sort((a,b) => b.date - a.date);
     transactions_import.push(...importData.transactions)
+
+    // db.collection('transactions').add({ 'name': "optus", date: Date.now() });
+
     // this.$store.dispatch('LOAD_IMPORTED_DATA', {
     //     transactions: importData.transactions,
     //     accounts: [...importData.accountById.values()]
     // });
+}
+
+const recordTransactions = function() {
+    let batch = db.batch()
+    transactions_import.forEach((doc) => {
+        const safeDoc = {
+            name: doc.name,
+            date: doc.date,
+            amount: doc.amount,
+            fitid: doc.fitid,
+            accountId: doc.accountId
+        }
+        // console.log(safeDoc)
+        batch.set(db.collection('transactions').doc(), safeDoc)
+    })
+    batch.commit()
 }
 
 const readFile = function(f) {

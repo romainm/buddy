@@ -9,8 +9,11 @@
 	import Nav from './components/Nav.svelte'
 
 	import { auth, googleProvider } from './firebase';
-    import { authState } from 'rxfire/auth';
+	import { authState } from 'rxfire/auth';
 
+	import moment from 'moment';
+	window.moment = moment;
+	
     let user;
 
     const unsubscribe = authState(auth).subscribe(u => user = u);
