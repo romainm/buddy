@@ -12,6 +12,7 @@ import moment from 'moment';
 import { db } from '../firebase';
 
 let transactions_import = [];
+let accounts = []
 
 onMount(() => {
     const table = new Tabulator("#transactions-table", {
@@ -102,16 +103,18 @@ const readIt = async function(event) {
     importData.transactions.sort((a,b) => b.date - a.date);
     transactions_import.push(...importData.transactions)
 
-    // db.collection('transactions').add({ 'name': "optus", date: Date.now() });
-
-    // this.$store.dispatch('LOAD_IMPORTED_DATA', {
-    //     transactions: importData.transactions,
-    //     accounts: [...importData.accountById.values()]
-    // });
+    accounts = [...importData.accountById.values()]
 }
 
 const recordTransactions = function() {
     let batch = db.batch()
+
+    accounts.forEach(doc => {
+        const safeDoc = {
+            type: doc.type,
+        }
+        batch.set(db.collection('accounts').doc(doc.id), safeDoc, {merge: true})
+    })
     transactions_import.forEach((doc) => {
         const safeDoc = {
             name: doc.name,
@@ -120,7 +123,6 @@ const recordTransactions = function() {
             fitid: doc.fitid,
             accountId: doc.accountId
         }
-        // console.log(safeDoc)
         batch.set(db.collection('transactions').doc(), safeDoc)
     })
     batch.commit()

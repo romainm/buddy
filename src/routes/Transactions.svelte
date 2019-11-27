@@ -1,18 +1,28 @@
 
 <h1>Transactions!</h1>
 
-<div id="transactions-table"/>
+<table class="transactions">
+    <th>Date</th>
+    <th>Account</th>
+    <th>Amount</th>
+    <th>Name</th>
+    {#each transactions as transaction}
+        <tr>
+            <td>{formatDate(transaction.date)}</td>
+            <td>{transaction.accountId}</td>
+            <td>{formatMoney(transaction.amount)}</td>
+            <td>{transaction.name}</td>
+        </tr>
+    {/each}
+</table>
 
 <script>
 
-import Tabulator from 'tabulator-tables';
-
 import { collectionData } from 'rxfire/firestore';
 import { db } from '../firebase';
-import { dateFormatter } from '../utils/formatters';
+import { formatDate, formatMoney } from '../utils/formatters';
 import { onMount } from 'svelte';
 import { map, tap } from 'rxjs/operators';
-import moment from 'moment';
 
 const query = db.collection('transactions');
 
@@ -26,33 +36,23 @@ collectionData(query, 'id')
         })
     )
     .subscribe(transactions_ => { 
-        transactions.push(...transactions_)
+        transactions = transactions_
     })
 
-onMount(() => {
-    const table = new Tabulator("#transactions-table", {
-        data: transactions,
-        reactiveData:true,
-        layout:"fitData",
-        columns:[
-            {
-                title:"Date", 
-                field:"date", 
-                width:110, 
-                align:"center", 
-                editable:false, 
-                formatter: dateFormatter, 
-                sorter:"date", 
-                sorterParams:{
-                    format:"DD/MM/YY",
-                    alignEmptyValues:"top",
-                }
-            },
-            {title:"Account", field:"accountId", width:200, editable:false},
-            {title:"Amount", field:"amount", width:130, align: "right", editable:false},
-            {title:"Name", field:"name", minWidth:300, editable:false},
-        ],
-    });
-});
 
 </script>
+
+<style>
+table.transactions {
+    /* border-spacing: 10px; */
+}
+table.transactions td {
+    padding: 2px 10px;
+}
+table.transactions td:nth-child(3) {
+    text-align: right;
+}
+table.transactions td:nth-child(1) {
+    text-align: right;
+}
+</style>

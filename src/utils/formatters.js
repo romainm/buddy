@@ -1,23 +1,19 @@
 import moment from "moment";
 
-export function dateFormatter(cell) {
-  let value = cell.getValue();
-
+export function formatDate(value) {
   if (value) {
     value = moment(value).format("DD/MM/YY");
   }
-
   return value;
 }
 
-export function moneyFormatter(cell) {
-  let value = cell.getValue();
-  if (value < 0) {
-    cell.getElement().style.color = "red";
-  } else {
-    cell.getElement().style.color = "green";
-    cell.getElement().style.fontWeight = "bold";
-  }
+export function formatMoney(value) {
+  // if (value < 0) {
+  //   cell.getElement().style.color = "red";
+  // } else {
+  //   cell.getElement().style.color = "green";
+  //   cell.getElement().style.fontWeight = "bold";
+  // }
   return toMoney(value);
 }
 

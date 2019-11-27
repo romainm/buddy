@@ -14,7 +14,6 @@ let transactions = [];
 
 collectionData(query, 'id')
   .subscribe(transactions_ => { 
-      console.log('hey')
       transactions = transactions_
        })
 
