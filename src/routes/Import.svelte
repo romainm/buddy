@@ -10,6 +10,7 @@ import Tabulator from 'tabulator-tables';
 import { onMount } from 'svelte';
 import moment from 'moment';
 import { db } from '../firebase';
+import { User } from '../stores/user';
 
 let transactions_import = [];
 let accounts = []
@@ -113,7 +114,7 @@ const recordTransactions = function() {
         const safeDoc = {
             type: doc.type,
         }
-        batch.set(db.collection('accounts').doc(doc.id), safeDoc, {merge: true})
+        batch.set($User.doc.collection('accounts').doc(doc.id), safeDoc, {merge: true})
     })
     transactions_import.forEach((doc) => {
         const safeDoc = {
@@ -123,7 +124,7 @@ const recordTransactions = function() {
             fitid: doc.fitid,
             accountId: doc.accountId
         }
-        batch.set(db.collection('transactions').doc(), safeDoc)
+        batch.set($User.doc.collection('transactions').doc(), safeDoc)
     })
     batch.commit()
 }

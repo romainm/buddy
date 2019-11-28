@@ -23,21 +23,25 @@ import { db } from '../firebase';
 import { formatDate, formatMoney } from '../utils/formatters';
 import { onMount } from 'svelte';
 import { map, tap } from 'rxjs/operators';
-
-const query = db.collection('transactions');
+import { User } from '../stores/user';
 
 let transactions = [];
 
-collectionData(query, 'id')
-    .pipe(
-        // timestamp to Date
-        map(transactions => { 
-            return transactions.map( t => {return {...t, date: t.date.toDate() }}) 
+$: { 
+    if ($User.doc) {
+        const query = $User.doc.collection('transactions');
+        collectionData(query, 'id')
+        .pipe(
+            // timestamp to Date
+            map(transactions => { 
+                return transactions.map( t => {return {...t, date: t.date.toDate() }}) 
+            })
+        )
+        .subscribe(transactions_ => { 
+            transactions = transactions_
         })
-    )
-    .subscribe(transactions_ => { 
-        transactions = transactions_
-    })
+    }
+}
 
 
 </script>

@@ -1,4 +1,8 @@
-*Psst — looking for a shareable component template? Go here --> [sveltejs/component-template](https://github.com/sveltejs/component-template)*
+Todo:
+- setup a user collection with other documents as subcollections
+- categorisation of transactions
+- search by anything (name, category, amount ("<1000 >30"))
+- graph past data by search result
 
 ---
 

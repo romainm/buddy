@@ -8,23 +8,39 @@
     import Profile from './components/Profile.svelte';
 	import Nav from './components/Nav.svelte'
 
-	import { auth, googleProvider } from './firebase';
+	import { db, auth, googleProvider } from './firebase';
 	import { authState } from 'rxfire/auth';
+	import { User } from './stores/user';
 
 	import moment from 'moment';
 	window.moment = moment;
-	
-    let user;
 
-    const unsubscribe = authState(auth).subscribe(u => user = u);
+	async function setupUser(u, createIfNotExists=true) {
+		const doc = db.collection('users').doc(u.uid)
+		User.set({...u, doc})
+
+		// if (!doc.exists && createIfNotExists) {
+		// 	console.log('Creating user');
+		// 	const ref = await db.collection('users').doc(u.uid).set({email: u.email})
+		// 	setupUser(u, createIfNotExists=false)
+		// } else {
+		// 	console.log('User data:', doc.data());
+		// 	User.set({...u, doc})
+		// }
+	}
+
+    const unsubscribe = authState(auth).subscribe(u => {
+		// Expand user with doc attribute pointing to its collection
+		// so first create it if needed.
+		setupUser(u)
+	});
 
     function login() {
         auth.signInWithPopup(googleProvider);
     }
 
-
 	export let name;
-	export let segment;
+	let segment;
 
 	const routes = {
     '/': Transactions,
@@ -63,11 +79,10 @@
 <div id="app">
 
 <section>
-{#if user}
-    <Profile {...user} />
+{#if $User}
+    <Profile User={$User}/>
     <button on:click={ () => auth.signOut() }>Logout</button>
     <hr>
-    <!-- <Todos uid={user.uid} /> -->
 {:else}
 	<button on:click={login}>
 		Signin with Google
