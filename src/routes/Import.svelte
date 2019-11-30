@@ -1,33 +1,17 @@
 
 <input id="import-file" type="file" on:input={readIt} multiple/>
 <button on:click={recordTransactions}>Record Transactions</button>
-<div id="transactions-table"></div>
-
+<TransactionTable transactions={transactions_import}/>
 
 
 <script>
-import Tabulator from 'tabulator-tables';
-import { onMount } from 'svelte';
+import TransactionTable from '../components/TransactionTable.svelte'
 import moment from 'moment';
 import { db } from '../firebase';
 import { User } from '../stores/user';
 
 let transactions_import = [];
 let accounts = []
-
-onMount(() => {
-    const table = new Tabulator("#transactions-table", {
-        data: transactions_import,
-        reactiveData:true,
-        layout:"fitData",
-        columns:[
-            {title:"Date", field:"date", align:"center", width:110, editable:false},
-            {title:"Account", field:"accountId", width:200, editable:false},
-            {title:"Amount", field:"amount", width:130, align: "right", editable:false},
-            {title:"Name", field:"name", minWidth:300, editable:false},
-        ],
-    });
-});
 
 const readIt = async function(event) {
     let importData = {
@@ -102,7 +86,7 @@ const readIt = async function(event) {
     }
     // sort by date desc
     importData.transactions.sort((a,b) => b.date - a.date);
-    transactions_import.push(...importData.transactions)
+    transactions_import = importData.transactions
 
     accounts = [...importData.accountById.values()]
 }

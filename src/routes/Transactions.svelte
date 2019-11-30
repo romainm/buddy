@@ -11,22 +11,10 @@
 <HelperText id="super-helper">Search categories, name, amount...</HelperText>
 <!-- <Button on:click={() => alert('Clicked!')}>Just a Button</Button> -->
 
-<table class="transactions">
-    <th>Date</th>
-    <th>Account</th>
-    <th>Amount</th>
-    <th>Name</th>
-    {#each transactions as transaction}
-        <tr>
-            <td>{formatDate(transaction.date)}</td>
-            <td>{transaction.accountId}</td>
-            <td>{formatMoney(transaction.amount)}</td>
-            <td>{transaction.name}</td>
-        </tr>
-    {/each}
-</table>
+<TransactionTable transactions={transactions}/>
 
 <script>
+import TransactionTable from '../components/TransactionTable.svelte'
 import { collectionData } from 'rxfire/firestore';
 import { db } from '../firebase';
 import { formatDate, formatMoney } from '../utils/formatters';
@@ -96,16 +84,4 @@ $: updateTransactions(searchText)
 </script>
 
 <style>
-table.transactions {
-    /* border-spacing: 10px; */
-}
-table.transactions td {
-    padding: 2px 10px;
-}
-table.transactions td:nth-child(3) {
-    text-align: right;
-}
-table.transactions td:nth-child(1) {
-    text-align: right;
-}
 </style>
