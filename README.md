@@ -1,7 +1,6 @@
 Todo:
-- setup a user collection with other documents as subcollections
-- categorisation of transactions
 - search by anything (name, category, amount ("<1000 >30"))
+- categorisation of transactions
 - graph past data by search result
 
 ---

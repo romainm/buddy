@@ -122,11 +122,29 @@ const recordTransactions = function() {
             date: doc.date,
             amount: doc.amount,
             fitid: doc.fitid,
-            accountId: doc.accountId
+            accountId: doc.accountId,
+            keywords: buildKeywords(doc),
         }
         batch.set($User.doc.collection('transactions').doc(), safeDoc)
     })
     batch.commit()
+}
+
+function buildKeywords(transaction) {
+    let keywords = transaction.name.split(' ');
+    keywords = keywords.map(name => name.toLowerCase())
+
+    const namesToSkip = ['to']
+    namesToSkip.forEach(name => {
+        const index = keywords.indexOf(name);
+        if (index > -1) {
+            keywords.splice(index, 1);
+        }
+    })
+    // return new Map(keywords.map(k => [k, true]));
+    keywords = keywords.filter(entry => entry.trim() != '')
+    keywords = keywords.reduce((o, key) => ({ ...o, [key]: true}), {})
+    return keywords;
 }
 
 const readFile = function(f) {
