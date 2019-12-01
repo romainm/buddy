@@ -1,16 +1,16 @@
 
 <h1>Transactions!</h1>
 
-
-<Textfield
-  bind:value={searchText}
-  label="Search"
-  input$aria-controls="super-helper"
-  input$aria-describedby="super-helper"
-/>
-<HelperText id="super-helper">Search categories, name, amount...</HelperText>
-<!-- <Button on:click={() => alert('Clicked!')}>Just a Button</Button> -->
-
+<Form>
+    <FormGroup>
+        <Input plaintext placeholder="Search for transactions / category"
+            type="search"
+            name="search"
+            id="exampleSearch"
+            bind:value={searchText}
+        />
+    </FormGroup>
+</Form>
 <TransactionTable transactions={transactions}/>
 
 <script>
@@ -21,14 +21,12 @@ import { formatDate, formatMoney } from '../utils/formatters';
 import { onMount } from 'svelte';
 import { map, tap } from 'rxjs/operators';
 import { User } from '../stores/user';
-
-import Button from '@smui/button';
-import Textfield from '@smui/textfield';
-import HelperText from '@smui/textfield/helper-text';
+import { Form, FormGroup, FormText, Input, Label } from 'sveltestrap';
 
 let transactions = [];
 let searchText = "";
 let searchScheduled = false;
+let lastSearchInput = null;
 
 
 function queryTransactions() {
@@ -71,16 +69,32 @@ $: {
 function updateTransactions(text) {
     // add a timer, accumulate changes every .5s
     if ($User.doc) {
-        if (! searchScheduled) {
-            searchScheduled = true;
-            window.setTimeout(queryTransactions, 500)
+        // no active search, start timer
+        if (lastSearchInput === null) {
+            console.log('activating')
+            window.setTimeout(checkQueryTransactions, 1000)
         }
+        const now = new Date()
+        lastSearchInput = now;
     }
 }
 
+function checkQueryTransactions() {
+    // last keystroke was a second ago, trigger query
+    const now = new Date()
+    const nbms = 500
+    if (now - lastSearchInput > nbms) {
+        lastSearchInput = null;
+        queryTransactions()
+    }
+    // otherwise, just add a timer
+    else{
+        window.setTimeout(checkQueryTransactions, nbms - (now-lastSearchInput))
+    }
+
+}
+
 $: updateTransactions(searchText)
-
-
 </script>
 
 <style>

@@ -28,16 +28,16 @@ export default {
 			preprocess: autoPreprocess()
 		}),
 		postcss({
-			extract: 'public/bundle2.css',
+			// extract: 'public/bundle2.css',
 			minimize: true,
-			use: [
-				['sass', {
-				includePaths: [
-					'./theme',
-					'./node_modules'
-				]
-				}]
-			]
+			// use: [
+			// 	['sass', {
+			// 	includePaths: [
+			// 		'./theme',
+			// 		'./node_modules'
+			// 	]
+			// 	}]
+			// ]
 		}),
 
 		// If you have external dependencies installed from

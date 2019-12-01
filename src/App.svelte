@@ -5,7 +5,6 @@
 	import Import from './routes/Import.svelte'
 	import Router from 'svelte-spa-router'
 
-    import Profile from './components/Profile.svelte';
 	import Nav from './components/Nav.svelte'
 
 	import { db, auth, googleProvider } from './firebase';
@@ -18,15 +17,6 @@
 	async function setupUser(u, createIfNotExists=true) {
 		const doc = db.collection('users').doc(u.uid)
 		User.set({...u, doc})
-
-		// if (!doc.exists && createIfNotExists) {
-		// 	console.log('Creating user');
-		// 	const ref = await db.collection('users').doc(u.uid).set({email: u.email})
-		// 	setupUser(u, createIfNotExists=false)
-		// } else {
-		// 	console.log('User data:', doc.data());
-		// 	User.set({...u, doc})
-		// }
 	}
 
     const unsubscribe = authState(auth).subscribe(u => {
@@ -34,10 +24,6 @@
 		// so first create it if needed.
 		setupUser(u)
 	});
-
-    function login() {
-        auth.signInWithPopup(googleProvider);
-    }
 
 	export let name;
 	let segment;
@@ -77,18 +63,6 @@
 </style>
 
 <div id="app">
-
-<section>
-{#if $User}
-    <Profile User={$User}/>
-    <button on:click={ () => auth.signOut() }>Logout</button>
-    <hr>
-{:else}
-	<button on:click={login}>
-		Signin with Google
-	</button>
-{/if}
-</section>
 
 <Nav {segment}/>
 <Router {routes}/>
