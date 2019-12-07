@@ -45,7 +45,15 @@ function queryTransactions() {
         p = transactionsCol
             .find({}, {})
             .toArray()
+        p = transactionsCol
+            .find( {
+                "date": { 
+                    $gte: new Date((new Date().getTime() - (90 * 24 * 60 * 60 * 1000)))
+                }
+            }, {})
+            .toArray()
     }
+
     p.then(docs => {
         transactions = docs
     })
