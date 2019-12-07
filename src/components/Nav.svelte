@@ -1,12 +1,7 @@
 <script>
     import {link, location} from 'svelte-spa-router'
-	import { User } from '../stores/user';
-	import { auth, googleProvider } from '../firebase';
+	import { auth, user, login } from '../stitch';
 	import Profile from './Profile.svelte';
-
-    function login() {
-        auth.signInWithPopup(googleProvider);
-	}
 	
 	let active;
 
@@ -56,20 +51,20 @@
 
 <nav>
 	<section>
-	<ul>
-		<li><a class='{$location === "/" ? "selected" : ""}' href='/' use:link>transactions</a></li>
-		<li><a class='{$location === "/budgets" ? "selected" : ""}' href='/budgets' use:link>budgets</a></li>
-		<li><a class='{$location === "/reports" ? "selected" : ""}' href='/reports' use:link>reports</a></li>
-		<li><a class='{$location === "/import" ? "selected" : ""}' href='/import' use:link>import</a></li>
-	</ul>
-	{#if $User}
-		<Profile User={$User}/>
-		<button on:click={ () => auth.signOut() }>Logout</button>
+	{#if $user}
+		<Profile user={$user}/>
+		<button on:click={ () => {auth.logout(); user.set(null)} }>Logout</button>
 		<hr>
 	{:else}
 		<button on:click={login}>
 			Signin with Google
 		</button>
 	{/if}
+	<ul>
+		<li><a class='{$location === "/" ? "selected" : ""}' href='/' use:link>transactions</a></li>
+		<li><a class='{$location === "/budgets" ? "selected" : ""}' href='/budgets' use:link>budgets</a></li>
+		<li><a class='{$location === "/reports" ? "selected" : ""}' href='/reports' use:link>reports</a></li>
+		<li><a class='{$location === "/import" ? "selected" : ""}' href='/import' use:link>import</a></li>
+	</ul>
 	</section>
 </nav>

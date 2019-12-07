@@ -1,8 +1,8 @@
 <script>
 
-export let User;
+export let user;
 
 </script>
 
-<img src={ User.photoURL } width="40" alt="user avatar">
-<span>{ User.displayName }!</span>
+<img src={ user.profile.data.picture } width="40" alt="user avatar">
+<span>{ user.profile.data.name }!</span>

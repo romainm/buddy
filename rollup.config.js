@@ -1,5 +1,7 @@
 import svelte from 'rollup-plugin-svelte';
 import resolve from 'rollup-plugin-node-resolve';
+import builtins from 'rollup-plugin-node-builtins';
+import globals from 'rollup-plugin-node-globals';
 import commonjs from 'rollup-plugin-commonjs';
 import livereload from 'rollup-plugin-livereload';
 import { terser } from 'rollup-plugin-terser';
@@ -28,16 +30,16 @@ export default {
 			preprocess: autoPreprocess()
 		}),
 		postcss({
-			// extract: 'public/bundle2.css',
+			extract: 'public/bundle2.css',
 			minimize: true,
-			// use: [
-			// 	['sass', {
-			// 	includePaths: [
-			// 		'./theme',
-			// 		'./node_modules'
-			// 	]
-			// 	}]
-			// ]
+			use: [
+				['sass', {
+				includePaths: [
+					'./theme',
+					'./node_modules'
+				]
+				}]
+			]
 		}),
 
 		// If you have external dependencies installed from
@@ -47,9 +49,12 @@ export default {
 		// https://github.com/rollup/rollup-plugin-commonjs
 		resolve({
 			browser: true,
+			preferBuiltins: false,
 			dedupe: importee => importee === 'svelte' || importee.startsWith('svelte/')
 		}),
 		commonjs(),
+		globals(),
+		builtins(),
 
 		// Watch the `public` directory and refresh the
 		// browser on changes when not in production

@@ -7,6 +7,7 @@
             type="search"
             name="search"
             id="exampleSearch"
+            readonly=0
             bind:value={searchText}
         />
     </FormGroup>
@@ -15,60 +16,51 @@
 
 <script>
 import TransactionTable from '../components/TransactionTable.svelte'
-import { collectionData } from 'rxfire/firestore';
-import { db } from '../firebase';
 import { formatDate, formatMoney } from '../utils/formatters';
 import { onMount } from 'svelte';
 import { map, tap } from 'rxjs/operators';
-import { User } from '../stores/user';
 import { Form, FormGroup, FormText, Input, Label } from 'sveltestrap';
+import { user, db } from '../stitch';
 
 let transactions = [];
 let searchText = "";
 let searchScheduled = false;
 let lastSearchInput = null;
+let shouldQuery = false;
 
 
 function queryTransactions() {
-    searchScheduled = false;
-    let query = $User.doc.collection('transactions');
+    searchScheduled = false
+
+    const transactionsCol = db.collection('transactions')
+
+    let p
     if (searchText) {
-        let searchKeywords = searchText.split(" ")
-        searchKeywords.map(k => k.toLowerCase())
-        // filter out empty
-        searchKeywords = searchKeywords.filter(entry => entry.trim() != '')
-        searchKeywords.forEach(k => {
-            query = query.where(`keywords.${k}`, '==', true)
-        })
-        console.log(query)
+        p = transactionsCol
+            .find({"name": new RegExp(searchText, "i")}, {})
+            .toArray()
     }
     else {
         // last 30 days by default
-        let sinceDate = moment().subtract(3, 'month').toDate();
-        query = query.where("date", '>', sinceDate)
-        // query = query.orderByChild("date").startAt(new DateTime().getMillis())
+        p = transactionsCol
+            .find({}, {})
+            .toArray()
     }
-    collectionData(query, 'id')
-    .pipe(
-        // timestamp to Date
-        map(transactions => { 
-            return transactions.map( t => {return {...t, date: t.date.toDate() }}) 
-        })
-    )
-    .subscribe(transactions_ => { 
-        transactions = transactions_
+    p.then(docs => {
+        transactions = docs
     })
 }
 
 $: { 
-    if ($User.doc) {
+    if ($user) {
+        console.log('user ok')
         queryTransactions()
     }
 }
 
 function updateTransactions(text) {
     // add a timer, accumulate changes every .5s
-    if ($User.doc) {
+    if ($user) {
         // no active search, start timer
         if (lastSearchInput === null) {
             console.log('activating')
@@ -95,6 +87,11 @@ function checkQueryTransactions() {
 }
 
 $: updateTransactions(searchText)
+// $: {
+//     if (shouldQuery) {
+//         queryTransactions()
+//     }
+// }
 </script>
 
 <style>

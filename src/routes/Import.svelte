@@ -1,4 +1,5 @@
 
+<h1>importtt</h1>
 <input id="import-file" type="file" on:input={readIt} multiple/>
 <button on:click={recordTransactions}>Record Transactions</button>
 <TransactionTable transactions={transactions_import}/>
@@ -7,13 +8,13 @@
 <script>
 import TransactionTable from '../components/TransactionTable.svelte'
 import moment from 'moment';
-import { db } from '../firebase';
-import { User } from '../stores/user';
+import { user, db } from '../stitch';
 
 let transactions_import = [];
 let accounts = []
 
 const readIt = async function(event) {
+    console.log($user)
     let importData = {
         transactions: [],
         accountById: new Map(),
@@ -92,26 +93,39 @@ const readIt = async function(event) {
 }
 
 const recordTransactions = function() {
-    let batch = db.batch()
+    const accountsCol = db.collection('accounts')
+    const transactionsCol = db.collection('transactions')
 
-    accounts.forEach(doc => {
-        const safeDoc = {
+    const safeAccounts = accounts.map(doc => {
+        return {
+            owner_id: $user.id,
             type: doc.type,
         }
-        batch.set($User.doc.collection('accounts').doc(doc.id), safeDoc, {merge: true})
     })
-    transactions_import.forEach((doc) => {
-        const safeDoc = {
+
+    const safeTransactions = transactions_import.map(doc => {
+        return {
+            owner_id: $user.id,
             name: doc.name,
             date: doc.date,
             amount: doc.amount,
-            fitid: doc.fitid,
+            fitId: doc.fitid,
             accountId: doc.accountId,
-            keywords: buildKeywords(doc),
         }
-        batch.set($User.doc.collection('transactions').doc(), safeDoc)
     })
-    batch.commit()
+
+    console.log('insert many accounts')
+    console.log(safeAccounts)
+    // accountsCol.insertMany(safeAccounts).catch(
+    //     err => console.error(`Failed to insert documents: ${err}`)
+    // )
+    // console.log('insert many transactions')
+    // console.log(safeTransactions)
+    // transactionsCol.insertMany(safeTransactions)
+    transactionsCol.insertMany(safeTransactions).catch(
+        err => console.error(`Failed to insert documents: ${err}`)
+    )
+
 }
 
 function buildKeywords(transaction) {

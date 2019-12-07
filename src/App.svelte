@@ -7,23 +7,8 @@
 
 	import Nav from './components/Nav.svelte'
 
-	import { db, auth, googleProvider } from './firebase';
-	import { authState } from 'rxfire/auth';
-	import { User } from './stores/user';
-
 	import moment from 'moment';
 	window.moment = moment;
-
-	async function setupUser(u, createIfNotExists=true) {
-		const doc = db.collection('users').doc(u.uid)
-		User.set({...u, doc})
-	}
-
-    const unsubscribe = authState(auth).subscribe(u => {
-		// Expand user with doc attribute pointing to its collection
-		// so first create it if needed.
-		setupUser(u)
-	});
 
 	export let name;
 	let segment;
