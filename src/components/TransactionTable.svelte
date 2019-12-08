@@ -5,12 +5,14 @@
     <th>Amount</th>
     <th>Name</th>
     {#each transactions as transaction}
-        <tr>
-            <td>{formatDate(transaction.date)}</td>
-            <td>{transaction.accountId}</td>
-            <td>{formatMoney(transaction.amount)}</td>
-            <td>{transaction.name}</td>
-        </tr>
+        <!-- {#if ! transaction.exists} -->
+            <tr>
+                <td>{formatDate(transaction.date)}</td>
+                <td>{transaction.accountId}</td>
+                <td>{formatMoney(transaction.amount)}</td>
+                <td>{transaction.exists? "XXX" : transaction.name}</td>
+            </tr>
+        <!-- {/if} -->
     {/each}
 </table>
 

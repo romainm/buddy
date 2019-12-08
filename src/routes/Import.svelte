@@ -61,7 +61,7 @@ const readIt = async function(event) {
                     }
                     break;
                 case "STMTTRN":
-                    currentStatement = {index, import: true};
+                    currentStatement = {index, exists: false};
                     if (fullAccountId) {
                     currentStatement.accountId = fullAccountId;
                     }
@@ -93,6 +93,32 @@ const readIt = async function(event) {
     transactions_import = importData.transactions
 
     accountsToImport = [...importData.accountById.values()]
+
+    // check transactions to see if they have already been recorded
+    checkAlreadyRecordedTransactions()
+}
+
+async function checkAlreadyRecordedTransactions() {
+    const transactionsCol = db.collection('transactions')
+    for (let i=0; i < transactions_import.length; i++) {
+        const t = transactions_import[i]
+        const dbt = {
+            owner_id: $user.id,
+            name: t.name,
+            date: t.date,
+            amount: t.amount,
+            fitId: t.fitid,
+            accountId: t.accountId
+        }
+        
+        transactionsCol
+            .find(dbt, {"limit": 1})
+            .first()
+            .then(doc => {
+                console.log(`found existing one (${i}): ${doc.name}`)
+                transactions_import[i].exists = true
+            })
+    }
 }
 
 const recordTransactions = function() {
@@ -102,8 +128,8 @@ const recordTransactions = function() {
     const existingAccountIds = $accounts.map(
         account => account.id
     )
-    console.log('existing account ids')
-    console.log(existingAccountIds)
+
+    // only record accounts that we don't have already
     let safeAccounts = [];
     accountsToImport.forEach( account => {
         if (existingAccountIds.indexOf(account.id) === -1) {
@@ -122,12 +148,10 @@ const recordTransactions = function() {
             date: doc.date,
             amount: doc.amount,
             fitId: doc.fitid,
-            accountId: doc.accountId,
+            accountId: doc.accountId
         }
     })
 
-    console.log('accounts to insert')
-    console.log(safeAccounts)
     if (safeAccounts.length > 0) {
         accountsCol.insertMany(safeAccounts)
             .then( () => updateAccounts())
