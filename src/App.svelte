@@ -6,8 +6,13 @@
 	import Router from 'svelte-spa-router'
 
 	import Nav from './components/Nav.svelte'
+	import { transactionSearch } from './store/cache';
+	import { updateTransactions } from './api/transactions';
+	import { transactions } from './store/cache';
+	import { user, db } from './stitch';
 
 	import moment from 'moment';
+
 	window.moment = moment;
 
 	export let name;
@@ -20,6 +25,18 @@
 	'/reports': Reports,
 	'/import': Import,
 	}
+
+	// update list of transactions every time the search keyword is updated
+	$: {
+		if ($user) {
+			updateTransactions($transactionSearch)
+		}
+		else {
+			transactions.set([])
+		}
+	}
+
+
 </script>
 
 <style type="text/scss">
