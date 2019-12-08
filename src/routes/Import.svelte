@@ -1,5 +1,5 @@
 
-<h1>importtt</h1>
+<h1>import</h1>
 <input id="import-file" type="file" on:input={readIt} multiple/>
 <button on:click={recordTransactions}>Record Transactions</button>
 <TransactionTable transactions={transactions_import}/>
@@ -7,11 +7,14 @@
 
 <script>
 import TransactionTable from '../components/TransactionTable.svelte'
+import { updateTransactions } from '../api/transactions';
+import { updateAccounts } from '../api/accounts';
 import moment from 'moment';
 import { user, db } from '../stitch';
+import { accounts } from '../store/cache';
 
 let transactions_import = [];
-let accounts = []
+let accountsToImport = []
 
 const readIt = async function(event) {
     console.log($user)
@@ -89,17 +92,26 @@ const readIt = async function(event) {
     importData.transactions.sort((a,b) => b.date - a.date);
     transactions_import = importData.transactions
 
-    accounts = [...importData.accountById.values()]
+    accountsToImport = [...importData.accountById.values()]
 }
 
 const recordTransactions = function() {
     const accountsCol = db.collection('accounts')
     const transactionsCol = db.collection('transactions')
 
-    const safeAccounts = accounts.map(doc => {
-        return {
-            owner_id: $user.id,
-            type: doc.type,
+    const existingAccountIds = $accounts.map(
+        account => account.id
+    )
+    console.log('existing account ids')
+    console.log(existingAccountIds)
+    let safeAccounts = [];
+    accountsToImport.forEach( account => {
+        if (existingAccountIds.indexOf(account.id) === -1) {
+            safeAccounts.push({
+                owner_id: $user.id,
+                id: account.id,
+                type: account.type,
+            })
         }
     })
 
@@ -114,35 +126,21 @@ const recordTransactions = function() {
         }
     })
 
-    console.log('insert many accounts')
+    console.log('accounts to insert')
     console.log(safeAccounts)
-    // accountsCol.insertMany(safeAccounts).catch(
-    //     err => console.error(`Failed to insert documents: ${err}`)
-    // )
-    // console.log('insert many transactions')
-    // console.log(safeTransactions)
-    // transactionsCol.insertMany(safeTransactions)
-    transactionsCol.insertMany(safeTransactions).catch(
+    if (safeAccounts.length > 0) {
+        accountsCol.insertMany(safeAccounts)
+            .then( () => updateAccounts())
+            .catch(
+                err => console.log(`failed to insert accounts: ${err}`)
+            )
+    }
+    transactionsCol.insertMany(safeTransactions)
+        .then( () => updateTransactions())
+        .catch(
         err => console.error(`Failed to insert documents: ${err}`)
     )
 
-}
-
-function buildKeywords(transaction) {
-    let keywords = transaction.name.split(' ');
-    keywords = keywords.map(name => name.toLowerCase())
-
-    const namesToSkip = ['to']
-    namesToSkip.forEach(name => {
-        const index = keywords.indexOf(name);
-        if (index > -1) {
-            keywords.splice(index, 1);
-        }
-    })
-    // return new Map(keywords.map(k => [k, true]));
-    keywords = keywords.filter(entry => entry.trim() != '')
-    keywords = keywords.reduce((o, key) => ({ ...o, [key]: true}), {})
-    return keywords;
 }
 
 const readFile = function(f) {
@@ -153,6 +151,5 @@ const readFile = function(f) {
     reader.readAsText(f);
     })
 }
-
 
 </script>

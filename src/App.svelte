@@ -8,6 +8,7 @@
 	import Nav from './components/Nav.svelte'
 	import { transactionSearch } from './store/cache';
 	import { updateTransactions } from './api/transactions';
+	import { updateAccounts } from './api/accounts';
 	import { transactions } from './store/cache';
 	import { user, db } from './stitch';
 
@@ -27,13 +28,16 @@
 	}
 
 	// update list of transactions every time the search keyword is updated
-	$: {
-		if ($user) {
+	$: if ($user) {
 			updateTransactions($transactionSearch)
-		}
-		else {
-			transactions.set([])
-		}
+	}
+	else {
+		transactions.set([])
+	}
+
+	// list of accounts on user change
+	$: if ($user) {
+		updateAccounts()
 	}
 
 

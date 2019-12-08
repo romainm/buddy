@@ -19,9 +19,6 @@ function queryTransactions() {
     else {
         // last 30 days by default
         p = transactionsCol
-            .find({}, {})
-            .toArray()
-        p = transactionsCol
             .find( {
                 "date": { 
                     $gte: new Date((new Date().getTime() - (90 * 24 * 60 * 60 * 1000)))
