@@ -2,7 +2,7 @@
 <h1>import</h1>
 <input id="import-file" type="file" on:input={readIt} multiple/>
 <button on:click={recordTransactions}>Record Transactions</button>
-<TransactionTable transactions={transactions_import}/>
+<TransactionTable transactions={transactionsToImport}/>
 
 
 <script>
@@ -13,7 +13,7 @@ import moment from 'moment';
 import { user, db } from '../stitch';
 import { accounts } from '../store/cache';
 
-let transactions_import = [];
+let transactionsToImport = [];
 let accountsToImport = []
 
 const readIt = async function(event) {
@@ -90,7 +90,7 @@ const readIt = async function(event) {
     }
     // sort by date desc
     importData.transactions.sort((a,b) => b.date - a.date);
-    transactions_import = importData.transactions
+    transactionsToImport = importData.transactions
 
     accountsToImport = [...importData.accountById.values()]
 
@@ -100,8 +100,8 @@ const readIt = async function(event) {
 
 async function checkAlreadyRecordedTransactions() {
     const transactionsCol = db.collection('transactions')
-    for (let i=0; i < transactions_import.length; i++) {
-        const t = transactions_import[i]
+    for (let i=0; i < transactionsToImport.length; i++) {
+        const t = transactionsToImport[i]
         const dbt = {
             owner_id: $user.id,
             name: t.name,
@@ -116,7 +116,7 @@ async function checkAlreadyRecordedTransactions() {
             .first()
             .then(doc => {
                 console.log(`found existing one (${i}): ${doc.name}`)
-                transactions_import[i].exists = true
+                transactionsToImport[i].exists = true
             })
     }
 }
@@ -141,7 +141,15 @@ const recordTransactions = function() {
         }
     })
 
-    const safeTransactions = transactions_import.map(doc => {
+    console.log(`${transactionsToImport.length} original transactions`)
+    transactionsToImport = transactionsToImport.filter(t => ! t.exists)
+    console.log(`${transactionsToImport.length} to import`)
+    if (transactionsToImport.length === 0) {
+        console.log("nothing to import.")
+        return
+    }
+
+    const safeTransactions = transactionsToImport.map(doc => {
         return {
             owner_id: $user.id,
             name: doc.name,
@@ -164,6 +172,9 @@ const recordTransactions = function() {
         .catch(
         err => console.error(`Failed to insert documents: ${err}`)
     )
+
+    transactionsToImport = []
+    accountsToImport = []
 
 }
 

@@ -6,11 +6,11 @@
     <th>Name</th>
     {#each transactions as transaction}
         <!-- {#if ! transaction.exists} -->
-            <tr>
+            <tr class={transaction.exists? "exists" : ""}>
                 <td>{formatDate(transaction.date)}</td>
                 <td>{transaction.accountId}</td>
                 <td>{formatMoney(transaction.amount)}</td>
-                <td>{transaction.exists? "XXX" : transaction.name}</td>
+                <td>{transaction.name}</td>
             </tr>
         <!-- {/if} -->
     {/each}
@@ -35,5 +35,9 @@ table.transactions td:nth-child(3) {
 }
 table.transactions td:nth-child(1) {
     text-align: right;
+}
+table.transactions tr.exists td {
+    color: #888888;
+    font-style: italic;
 }
 </style>
