@@ -6,7 +6,7 @@
 	import Router from 'svelte-spa-router'
 
 	import Nav from './components/Nav.svelte'
-	import { transactionSearch } from './store/cache';
+	import { transactionFilter } from './store/cache';
 	import { updateTransactions } from './api/transactions';
 	import { updateAccounts } from './api/accounts';
 	import { transactions } from './store/cache';
@@ -27,9 +27,14 @@
 	'/import': Import,
 	}
 
+	// first time we load the app, we want latest transactions (last 30 days)
+	// then we want to refresh transactions on every update of
+	// 		- user
+	//		- search text
+	//		- 
 	// update list of transactions every time the search keyword is updated
 	$: if ($user) {
-			updateTransactions($transactionSearch)
+			updateTransactions($transactionFilter)
 	}
 	else {
 		transactions.set([])

@@ -1,7 +1,8 @@
 Todo:
-- search by anything (name, category, amount ("<1000 >30"))
 - categorisation of transactions
+- search by anything (name, category, amount ("<1000 >30"))
 - graph past data by search result
+- edit account: name / balance / balanceDate
 
 ---
 
