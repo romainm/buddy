@@ -22,7 +22,7 @@ export function updateTransactions(transactionFilter) {
     }
 
     transactionsCol
-        .find(conditions, {})
+        .find(conditions, {'sort': {'date': -1}})
         .toArray()
         .then(docs => {
             transactions.set(docs)

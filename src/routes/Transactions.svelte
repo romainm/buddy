@@ -4,7 +4,9 @@
 <ul id="account-list">
     {#each $accounts as account}
         <li>
-            <Button on:click={ () => onSelectAccount(account) }>
+            <Button 
+                class={$transactionFilter.accountId === account.id ? 'selected' : 'unselected'} 
+                on:click={ () => onSelectAccount(account) }>
                 {account.id} {account.name}
             </Button>
         </li>
@@ -22,9 +24,10 @@ import { formatDate, formatMoney } from '../utils/formatters';
 import { transactions, accounts, transactionFilter } from '../store/cache';
 
 function onSelectAccount(account) {
-    console.log(`selected acount ${account.id}`)
+    const accountId = $transactionFilter.accountId === account.id ? null: account.id
+    console.log(`selected acount ${accountId}`)
     transactionFilter.update(f => {
-        f.accountId = account.id
+        f.accountId = accountId
         return f
     })
 }
@@ -38,5 +41,8 @@ ul#account-list {
 ul#account-list li {
   display: inline;
   margin-left: 10px;
+}
+Button.selected {
+    border: 4px;
 }
 </style>
