@@ -1,7 +1,11 @@
 
 <h1>import</h1>
 <input id="import-file" type="file" on:input={readIt} multiple/>
-<button on:click={recordTransactions}>Record Transactions</button>
+<button 
+    disabled={recordButtonDisabled}
+    on:click={recordTransactions}>
+    Record Transactions
+</button>
 <TransactionTable transactions={transactionsToImport}/>
 
 
@@ -11,10 +15,18 @@ import { updateTransactions } from '../api/transactions';
 import { updateAccounts } from '../api/accounts';
 import moment from 'moment';
 import { user, db } from '../stitch';
-import { accounts } from '../store/cache';
+import { accounts, transactionFilter } from '../store/cache';
 
-let transactionsToImport = [];
+let transactionsToImport = []
 let accountsToImport = []
+let nbTransactionsToCheck = 0
+
+$: recordButtonDisabled = (
+    transactionsToImport.length === 0 
+ || nbTransactionsToCheck > 0
+)
+
+$: console.log(`${nbTransactionsToCheck} transactions to check`)
 
 const readIt = async function(event) {
     console.log($user)
@@ -89,12 +101,13 @@ const readIt = async function(event) {
 
     }
     // sort by date desc
-    importData.transactions.sort((a,b) => b.date - a.date);
+    importData.transactions.sort((a,b) => b.date - a.date)
     transactionsToImport = importData.transactions
 
     accountsToImport = [...importData.accountById.values()]
 
     // check transactions to see if they have already been recorded
+    nbTransactionsToCheck = transactionsToImport.length
     checkAlreadyRecordedTransactions()
 }
 
@@ -115,8 +128,11 @@ async function checkAlreadyRecordedTransactions() {
             .find(dbt, {"limit": 1})
             .first()
             .then(doc => {
-                console.log(`found existing one (${i}): ${doc.name}`)
-                transactionsToImport[i].exists = true
+                if (doc) {
+                    console.log(`found existing one (${i}): ${doc.name}`)
+                    transactionsToImport[i].exists = true
+                }
+                nbTransactionsToCheck -= 1
             })
     }
 }
@@ -168,7 +184,7 @@ const recordTransactions = function() {
             )
     }
     transactionsCol.insertMany(safeTransactions)
-        .then( () => updateTransactions())
+        .then( () => updateTransactions($transactionFilter))
         .catch(
         err => console.error(`Failed to insert documents: ${err}`)
     )
