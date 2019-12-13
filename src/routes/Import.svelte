@@ -1,15 +1,24 @@
 
-<h1>import</h1>
-<input id="import-file" type="file" on:input={readIt} multiple/>
-<button 
-    disabled={recordButtonDisabled}
-    on:click={recordTransactions}>
-    Record Transactions
-</button>
+<h1>Import transactions</h1>
+<Container>
+    <Row>
+        <Col zs="auto">
+            <Input id="import-file" type="file" on:input={readIt} multiple/>
+        </Col>
+        <Col>
+                <Button 
+                    disabled={recordButtonDisabled}
+                    on:click={recordTransactions}>
+                    Record Transactions
+                </Button>
+        </Col>
+    </Row>
+</Container>
 <TransactionTable transactions={transactionsToImport}/>
 
-
 <script>
+import { Col, Container, Row } from "sveltestrap";
+import { FormGroup, Input, Button } from 'sveltestrap';
 import TransactionTable from '../components/TransactionTable.svelte'
 import { updateTransactions } from '../api/transactions';
 import { updateAccounts } from '../api/accounts';
