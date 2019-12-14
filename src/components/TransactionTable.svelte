@@ -1,22 +1,27 @@
 
-<table class="transactions">
-    <th>Date</th>
-    <th>Account</th>
-    <th>Amount</th>
-    <th>Name</th>
-    {#each transactions as transaction}
-        <!-- {#if ! transaction.exists} -->
+<Table class="transactions">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Account</th>
+            <th>Amount</th>
+            <th>Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        {#each transactions as transaction}
             <tr class={transaction.exists? "exists" : ""}>
                 <td>{formatDate(transaction.date)}</td>
                 <td>{transaction.accountId}</td>
                 <td>{formatMoney(transaction.amount)}</td>
                 <td>{transaction.name}</td>
             </tr>
-        <!-- {/if} -->
-    {/each}
-</table>
+        {/each}
+    </tbody>
+</Table>
 
 <script>
+import { Table } from "sveltestrap";
 import { formatDate, formatMoney } from '../utils/formatters';
 
 export let transactions = [];
@@ -27,16 +32,16 @@ export let transactions = [];
 table.transactions {
     /* border-spacing: 10px; */
 }
-table.transactions td {
+td {
     padding: 2px 10px;
 }
-table.transactions td:nth-child(3) {
+td:nth-child(3) {
     text-align: right;
 }
-table.transactions td:nth-child(1) {
+td:nth-child(1) {
     text-align: right;
 }
-table.transactions tr.exists td {
+tr.exists td {
     color: #888888;
     font-style: italic;
 }

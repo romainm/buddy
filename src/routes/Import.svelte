@@ -1,5 +1,4 @@
 
-<h1>Import transactions</h1>
 <Container>
     <Row>
         <Col zs="auto">

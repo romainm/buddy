@@ -1,22 +1,24 @@
 
-<h1>Transactions!</h1>
-
-<ul id="account-list">
+<Container>
+<Row>
     {#each $accounts as account}
-        <li>
+        <Col xs="auto">
             <Button 
                 class={$transactionFilter.accountId === account.id ? 'selected' : 'unselected'} 
                 on:click={ () => onSelectAccount(account) }>
                 {account.id} {account.name}
             </Button>
-        </li>
+        </Col>
     {/each}
-</ul>
+
+</Row>
+</Container>
 
 <TransactionSearch/>
 <TransactionTable transactions={$transactions}/>
 
 <script>
+import { Col, Container, Row } from "sveltestrap";
 import TransactionSearch from '../components/TransactionSearch.svelte'
 import TransactionTable from '../components/TransactionTable.svelte'
 import { Button } from 'sveltestrap';
@@ -34,15 +36,10 @@ function onSelectAccount(account) {
 </script>
 
 <style>
-ul#account-list {
-  text-align: left;
-  padding: 1px;
-}
-ul#account-list li {
-  display: inline;
-  margin-left: 10px;
-}
 Button.selected {
     border: 4px;
+}
+Container {
+    background-color: red
 }
 </style>
