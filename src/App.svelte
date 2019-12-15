@@ -51,10 +51,6 @@
 <style type="text/scss">
   $color: blue;
 
-  h1 {
-    color: $color;
-  }
-
   div {
     background: rgb(15, 192, 15);
 
