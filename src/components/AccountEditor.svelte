@@ -16,23 +16,31 @@
 
   export let account = null;
 
-  let accountLabel= ''
-  let accountBalance=0
-  let accountBalanceDate=''
+  let accountLabel
+  let accountBalance
+  let accountBalanceDate
 
   $: if (account != null) {
-    accountLabel = account.label? account.label: accountLabel;
-    accountBalance = account.balance? account.balance: account.balance;
-    accountBalanceDate = account.balanceDate? account.balanceDate: accountBalanceDate;
+    initValues()
+  }
+
+  function initValues(){
+    accountLabel = account.label? account.label: ""
+    accountBalance = account.balance? account.balance: 0
+    accountBalanceDate = moment().format("YYYY-MM-DD")
+
+    if (account.balanceDate) {
+      accountBalanceDate = moment(account.balanceDate).format("YYYY-MM-DD")
+    }
   }
 
   function saveChanges() {
     const values = {
       label: accountLabel
     };
-    if (isValidBalance(accountBalance) && isValidDate(accountBalanceDate)) {
+    if (isValidBalance(accountBalance)) {
       values.balance = accountBalance;
-      values.balanceDate = accountBalanceDate;
+      values.balanceDate = convertToDate(accountBalanceDate);
     }
     const collection = db.collection('accounts')
     collection
@@ -50,11 +58,16 @@
   }
 
   function isValidBalance(balance) {
-    return false
+    const test = +balance;
+    return !isNaN(test)
   }
 
-  function isValidDate(date) {
-    return false
+  function convertToDate(date) {
+    const d = moment(date, 'DD/MM/YYYY');
+    if (!d.isValid()) {
+      return new Date()
+    }
+    return d.toDate()
   }
 
 </script>

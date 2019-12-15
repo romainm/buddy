@@ -8,12 +8,6 @@ export function formatDate(value) {
 }
 
 export function formatMoney(value) {
-  // if (value < 0) {
-  //   cell.getElement().style.color = "red";
-  // } else {
-  //   cell.getElement().style.color = "green";
-  //   cell.getElement().style.fontWeight = "bold";
-  // }
   return toMoney(value);
 }
 
