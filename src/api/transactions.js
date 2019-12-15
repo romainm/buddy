@@ -1,10 +1,9 @@
-
-import { transactions } from '../store/cache';
-import { db } from '../stitch';
+import { transactions } from "../store/cache"
+import { db } from "../stitch"
 
 export function updateTransactions(transactionFilter) {
-    const transactionsCol = db.collection('transactions')
-    console.log('query')
+    const transactionsCol = db.collection("transactions")
+    console.log("query")
     console.log(transactionFilter)
 
     const conditions = {}
@@ -16,15 +15,15 @@ export function updateTransactions(transactionFilter) {
     }
     if (Object.keys(conditions).length === 0) {
         // last 30 days by default
-        conditions.date = { 
-            $gte: new Date((new Date().getTime() - (90 * 24 * 60 * 60 * 1000)))
+        conditions.date = {
+            $gte: new Date(new Date().getTime() - 90 * 24 * 60 * 60 * 1000),
         }
     }
 
     transactionsCol
-        .find(conditions, {'sort': {'date': -1}})
+        .find(conditions, { sort: { date: -1 } })
         .toArray()
         .then(docs => {
             transactions.set(docs)
-    })
+        })
 }

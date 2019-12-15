@@ -1,17 +1,11 @@
-
 <script>
-import { tap } from 'rxjs/operators';
+    import { tap } from "rxjs/operators"
 
-
-let transactions = [];
-
-
+    let transactions = []
 </script>
 
 <h1>Reports!</h1>
 
 {#each transactions as transaction}
-
     <li>{transaction.name}</li>
-    
 {/each}
