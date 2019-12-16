@@ -1,6 +1,7 @@
 <script>
     import { Table } from "sveltestrap"
     import { formatDate, formatMoney } from "../utils/formatters"
+    import { accountLabelById } from "../store/cache"
 
     export let transactions = []
 </script>
@@ -37,7 +38,7 @@
         {#each transactions as transaction}
             <tr class={transaction.exists ? 'exists' : ''}>
                 <td>{formatDate(transaction.date)}</td>
-                <td>{transaction.accountId}</td>
+                <td>{$accountLabelById[transaction.accountId]}</td>
                 <td>{formatMoney(transaction.amount)}</td>
                 <td>{transaction.name}</td>
             </tr>
