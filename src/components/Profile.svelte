@@ -12,7 +12,7 @@
             class="ui primary button"
             on:click={() => {
                 auth.logout()
-                $user.set(null)
+                user.set(null)
             }}>
             Logout
         </button>
