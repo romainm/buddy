@@ -1,5 +1,5 @@
 <script>
-    import { Table } from "sveltestrap"
+    // import { Table } from "sveltestrap"
     import { formatDate, formatMoney } from "../utils/formatters"
     import { accountLabelById } from "../store/cache"
 
@@ -25,13 +25,13 @@
     }
 </style>
 
-<Table class="transactions">
+<table class="transactions">
     <thead>
         <tr>
             <th>Date</th>
             <th>Account</th>
             <th>Amount</th>
-            <th>Name</th>
+            <th data-sortable="true" data-field="name">Name</th>
         </tr>
     </thead>
     <tbody>
@@ -44,4 +44,4 @@
             </tr>
         {/each}
     </tbody>
-</Table>
+</table>

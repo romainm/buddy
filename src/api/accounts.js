@@ -8,6 +8,7 @@ export function updateAccounts() {
         .find({}, {})
         .toArray()
         .then(docs => {
+            console.log(`${docs.length} acounts retrieved`)
             accounts.set(docs)
         })
 }

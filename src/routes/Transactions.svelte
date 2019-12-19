@@ -1,5 +1,4 @@
 <script>
-    import { Col, Container, Row, Button } from "sveltestrap"
     import TransactionSearch from "../components/TransactionSearch.svelte"
     import TransactionTable from "../components/TransactionTable.svelte"
     import AccountEditor from "../components/AccountEditor.svelte"
@@ -29,12 +28,12 @@
     button.selected {
         border: 4px;
     }
-    span.account-button {
+    .account-button {
         background-color: #d1d1d1;
         border-radius: 5px;
         padding: 5px 10px;
     }
-    span.selected-account {
+    .selected-account {
         background-color: #999999;
         border-style: solid;
         border-width: 2px;
@@ -42,27 +41,27 @@
     }
 </style>
 
-<Container>
-    <Row>
+<div class="ui container grid">
+    <div class="row">
         {#each $accounts as account}
-            <Col xs="auto">
-                <span
-                    class="account-button"
-                    class:selected-account={selectedAccount === account}>
-                    <span on:click={() => onSelectAccount(account)}>
-                        {account.label ? account.label : account.id}
-                    </span>
-                    <span on:click={() => openAccountWindow(account)}>
-                        <Icon data={faEdit} />
-                    </span>
+            <div
+                class="three wide column account-button"
+                class:selected-account={selectedAccount === account}>
+                <span on:click={() => onSelectAccount(account)}>
+                    {account.label ? account.label : account.id}
                 </span>
-            </Col>
+                <span on:click={() => openAccountWindow(account)}>
+                    <Icon data={faEdit} />
+                </span>
+            </div>
         {/each}
-
-    </Row>
-</Container>
-
-<TransactionSearch />
-<TransactionTable transactions={$transactions} />
+    </div>
+    <div class=" sixteen wide column">
+        <TransactionSearch />
+    </div>
+    <div class="row">
+        <TransactionTable transactions={$transactions} />
+    </div>
+</div>
 
 <AccountEditor account={editedAccount} />

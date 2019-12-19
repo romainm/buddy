@@ -1,5 +1,4 @@
 <script>
-    import { Form, FormGroup, FormText, Input, Label } from "sveltestrap"
     import { transactionFilter } from "../store/cache"
     import { get } from "svelte/store"
     import { user } from "../stitch"
@@ -43,15 +42,13 @@
     $: updateTransactionFilter(searchText)
 </script>
 
-<Form>
-    <FormGroup>
-        <Input
-            plaintext
-            placeholder="Search for transactions / category"
-            type="search"
-            name="search"
-            id="exampleSearch"
-            bind:value={searchText}
-            readonly={false} />
-    </FormGroup>
-</Form>
+<div class="ui fluid input focus">
+    <input
+        plaintext
+        placeholder="Search for transactions / category"
+        type="search"
+        name="search"
+        id="exampleSearch"
+        bind:value={searchText}
+        readonly={false} />
+</div>

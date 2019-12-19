@@ -1,6 +1,22 @@
 <script>
-    export let user
+    import { auth, user, login } from "../stitch"
 </script>
 
-<img src={user.profile.data.picture} width="30" alt="user avatar" />
-<span>{user.profile.data.name}!</span>
+{#if $user}
+    <div class="ui left labeled button" tabindex="0">
+        <div class="ui image label">
+            <img src={$user.profile.data.picture} alt="user avatar" />
+            {$user.profile.data.name}
+        </div>
+        <button
+            class="ui primary button"
+            on:click={() => {
+                auth.logout()
+                $user.set(null)
+            }}>
+            Logout
+        </button>
+    </div>
+{:else}
+    <button class="ui primary button" on:click={login}>Sign in</button>
+{/if}
