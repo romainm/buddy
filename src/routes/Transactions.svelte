@@ -10,7 +10,10 @@
 
     let editedAccount = null
     let selectedAccount = null
-    const openAccountWindow = account => (editedAccount = account)
+    const openAccountWindow = account => {
+        console.log("open account")
+        editedAccount = account
+    }
 
     function onSelectAccount(account) {
         const accountId =
