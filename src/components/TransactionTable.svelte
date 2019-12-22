@@ -6,10 +6,21 @@
     import { onMount } from "svelte"
 
     export let transactions = []
-    $: wrappedTransactions = transactions.map(t => {
-        return { ...t, selected: false }
-    })
+    let selectedTransactionIds = []
+
+    function wrap(ts) {
+        return ts.map(t => {
+            return {
+                ...t,
+                selected: selectedTransactionIds.includes(t._id.toString()),
+            }
+        })
+    }
+
+    $: wrappedTransactions = wrap(transactions)
     $: selectedTransactions = wrappedTransactions.filter(t => t.selected)
+    // will only work with already recorded transactions
+    $: selectedTransactionIds = selectedTransactions.map(t => t._id.toString())
 
     let lastSelected = null
 
