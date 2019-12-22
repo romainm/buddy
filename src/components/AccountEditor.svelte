@@ -92,7 +92,7 @@
             </div>
             <div class="field">
                 <label>Balance Date</label>
-                <div class="ui calendar">
+                <div class="ui calendar" id="balanceDateCalendar">
                     <div class="ui input left icon">
                         <i class="calendar icon" />
                         <input
@@ -116,29 +116,3 @@
         </button>
     </div>
 </div>
-<!-- <Modal isOpen={account != null}>
-    <ModalHeader>Account {account.id}</ModalHeader>
-    <ModalBody>
-        <Form>
-            <FormGroup>
-                <Label for="label">Label</Label>
-                <Input type="text" bind:value={accountLabel} readonly={false} />
-            </FormGroup>
-            <FormGroup>
-                <Label for="balance">Balance</Label>
-                <InputGroup>
-                    <span class="input-group-addon">$</span>
-                    <Input type="text" bind:value={accountBalance} />
-                </InputGroup>
-            </FormGroup>
-            <FormGroup>
-                <Label for="balanceDate">Balance Date</Label>
-                <Input type="date" bind:value={accountBalanceDate} />
-            </FormGroup>
-        </Form>
-    </ModalBody>
-    <ModalFooter>
-        <Button color="primary" on:click={saveChanges}>Save</Button>
-        <Button color="secondary" on:click={discardChanges}>Cancel</Button>
-    </ModalFooter>
-</Modal> -->

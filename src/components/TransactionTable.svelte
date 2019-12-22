@@ -2,46 +2,91 @@
     // import { Table } from "sveltestrap"
     import { formatDate, formatMoney } from "../utils/formatters"
     import { accountLabelById } from "../store/cache"
+    import TransactionEditor from "./TransactionEditor.svelte"
+    import { onMount } from "svelte"
 
     export let transactions = []
+    $: wrappedTransactions = transactions.map(t => {
+        return { ...t, selected: false }
+    })
+    $: selectedTransactions = wrappedTransactions.filter(t => t.selected)
+
+    let lastSelected = null
+
+    function onClickRow(e, i) {
+        if (e.ctrlKey) {
+            wrappedTransactions[i].selected = !wrappedTransactions[i].selected
+        } else if (lastSelected != null && e.shiftKey) {
+            const start = Math.min(lastSelected, i)
+            const end = Math.max(lastSelected, i) + 1
+            for (let k = start; k < end; k++) {
+                wrappedTransactions[k].selected = true
+            }
+        } else {
+            const newStatus = !wrappedTransactions[i].selected
+            wrappedTransactions.forEach(t => (t.selected = false))
+            wrappedTransactions[i].selected = newStatus
+        }
+        if (!wrappedTransactions[i].selected) {
+            i = null
+        }
+        lastSelected = i
+    }
+    onMount(() => {
+        jQuery(".ui.sticky").sticky({
+            context: "#transactions-table",
+            observeChanges: true,
+        })
+    })
 </script>
 
 <style>
-    table.transactions {
-        /* border-spacing: 10px; */
+    .footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 50px;
     }
-    td {
-        padding: 2px 10px;
-    }
-    td:nth-child(3) {
-        text-align: right;
-    }
-    td:nth-child(1) {
-        text-align: right;
-    }
-    tr.exists td {
-        color: #888888;
-        font-style: italic;
+    .invisible {
+        visibility: hidden;
     }
 </style>
 
-<table class="transactions">
-    <thead>
-        <tr>
-            <th>Date</th>
-            <th>Account</th>
-            <th>Amount</th>
-            <th data-sortable="true" data-field="name">Name</th>
-        </tr>
-    </thead>
-    <tbody>
-        {#each transactions as transaction}
-            <tr class={transaction.exists ? 'exists' : ''}>
-                <td>{formatDate(transaction.date)}</td>
-                <td>{$accountLabelById[transaction.accountId]}</td>
-                <td>{formatMoney(transaction.amount)}</td>
-                <td>{transaction.name}</td>
+<div class="ui container" id="transactions-table">
+    <table class="ui selectable table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Account</th>
+                <th>Amount</th>
+                <th>Category</th>
+                <th data-sortable="true" data-field="name">Name</th>
             </tr>
-        {/each}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            {#each wrappedTransactions as transaction, i}
+                <tr
+                    class:disabled={transaction.exists}
+                    class:active={transaction.selected}
+                    on:click={e => onClickRow(e, i)}>
+                    <td>{formatDate(transaction.date)}</td>
+                    <td>{$accountLabelById[transaction.accountId]}</td>
+                    <td class="right aligned">
+                        {formatMoney(transaction.amount)}
+                    </td>
+                    <td>{transaction.category ? transaction.category : ''}</td>
+                    <td>{transaction.name}</td>
+                </tr>
+            {/each}
+        </tbody>
+    </table>
+    <div
+        class="ui right very close rail"
+        class:invisible={lastSelected === null}>
+        <div class="ui sticky">
+            <TransactionEditor transactions={selectedTransactions} />
+        </div>
+
+    </div>
+</div>

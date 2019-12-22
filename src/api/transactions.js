@@ -1,12 +1,15 @@
-import { transactions } from "../store/cache"
+import { transactions, transactionFilter } from "../store/cache"
 import { db } from "../stitch"
 
-export function updateTransactions(transactionFilter) {
+export function updateTransactions(filter_) {
+    console.log(`filter is ${filter_}`)
+    filter_ = filter_ === undefined ? transactionFilter : filter_
+    console.log(filter_)
     const transactionsCol = db.collection("transactions")
 
     const conditions = {}
-    if (transactionFilter.text) {
-        conditions.name = new RegExp(transactionFilter.text, "i")
+    if (filter_.text) {
+        conditions.name = new RegExp(filter_.text, "i")
     }
     if (Object.keys(conditions).length === 0) {
         // last 30 days by default
@@ -15,8 +18,8 @@ export function updateTransactions(transactionFilter) {
         }
     }
 
-    if (transactionFilter.accountId) {
-        conditions.accountId = transactionFilter.accountId
+    if (filter_.accountId) {
+        conditions.accountId = filter_.accountId
     }
 
     transactionsCol
